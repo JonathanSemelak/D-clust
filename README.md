@@ -1,4 +1,4 @@
-### dihedrals-analyzer 
+# DIHE-clust
 
 This python code helps to analyze the conformational landscape of a certain molecule by extracting the dihedrals angles obtained from a molecular dynamics (MD) trajectory.
 
