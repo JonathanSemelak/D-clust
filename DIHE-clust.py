@@ -212,7 +212,7 @@ if (ID == 0):
     print("\n Estimated ID:", int(ID) )
 else:
     ID=int(ID)
-    print("\n The Intrinsid Dimension (ID) was given as input:\n")
+    print("\n The Intrinsic Dimension (ID) was given as input:\n")
     print("\n Input ID:", int(ID),"\n" )
 
 print("\n Performing Advanced Density Peaks (ADP) analysis:\n")
@@ -284,3 +284,11 @@ if (write_trajs and not file_format == 'dihe'):
             # Close the file
             crd.close()
             print(" --> Frames belonging to cluster #"+str(int(i))+" saved in trajectory file "+ith_cluster_traj_filename)
+        for i in range(0, n_clusters):
+            ith_cluster_centroid_filename='cluster_'+str(int(i))+'_center.nc'
+            # Open the NetCDF trajectory file for writing
+            crd = NetCDFTraj.open_new(ith_cluster_centroid_filename, natom=natoms, box=False,
+                                     crds=True, vels=False, frcs=False)
+            crd.add_coordinates(coordinates[int(centers[i])])
+            crd.close()
+            print(" --> Coordinates of the center of cluster #"+str(int(i))+" saved in file "+ith_cluster_centroid_filename)
