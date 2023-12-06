@@ -260,27 +260,27 @@ centers=d_dihedrals.cluster_centers
 for i in range(0, n_clusters):
     print(f" {i:.0f} {centers[i]:.0f}")
 
-
 # Write stuff
+write_trajs=True
+freq_write=1
 
+# Cluster centers. In the original trajecotory these frames are given by (center + 400) * 10
+print("\n Saving trajectories for each cluster (writing frequence = ", int(freq_write) ," ):\n")
+print("\n Generating trajectory files...\n")
 
-#
-# if (write_trajs):
-# write_trajs=True
-#     print("\n Writing trajectory files...:\n")
-#
-#     selected_indices = [0, 2, 5]  # example indices of frames to keep
-#     selected_coordinates = coordinates[selected_indices]
-#     selected_indices=cluster_indices[0]
-#     # Create a new NETCDF file
-#     with netcdf_file('selected_trajectory.nc', 'w') as f:
-#         # Define dimensions
-#         f.createDimension('frame', len(selected_coordinates))
-#         f.createDimension('atom', natoms)
-#         f.createDimension('xyz', 3)
-#
-#         # Create variables
-#         coords_var = f.createVariable('coordinates', 'f', ('frame', 'atom', 'xyz'))
-#
-#         # Write data
-#         coords_var[:] = selected_coordinates
+if (write_trajs and not file_format == 'dihe'):
+    if (file_format=='netcdf'):
+        for i in range(0, n_clusters):
+            ith_cluster_indices=cluster_indices[i]
+            ith_cluster_indices=np.array(ith_cluster_indices)
+            ith_cluster_traj_filename='cluster_'+str(int(i))+'_traj.nc'
+            # Open the NetCDF trajectory file for writing
+            crd = NetCDFTraj.open_new(ith_cluster_traj_filename, natom=natoms, box=False,
+                                     crds=True, vels=False, frcs=False)
+            selected_coordinates=coordinates[ith_cluster_indices]
+            for i in range(0,len(selected_coordinates)):
+                if (i%freq_write == 0):
+                    crd.add_coordinates(selected_coordinates[i])
+            # Close the file
+            crd.close()
+            print(" --> Frames belonging to cluster #"+str(int(i))+" saved in trajectory file "+ith_cluster_traj_filename)
