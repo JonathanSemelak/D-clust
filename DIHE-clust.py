@@ -62,11 +62,12 @@ script_description = """
     *                                                          *
     *   This tool will help use to extract temporal courses    *
     *   of dihedral angles from your trajectory file and to    *
-    *   analize them the DADApy library.                       *
+    *   analize them with the DADApy library.                  *
     *                                                          *
-    *  It is pretty much an automatization tool that follows   *
+    *  It's pretty much an automatization tool that follows    *
     *  the DADApy official tutorial, but it makes it easier    *
-    *  for AMBER users (just bring your .nc and that is all)   *
+    *  for AMBER users.                                        *
+    *                                                          *
     *                                                          *
     ************************************************************
 """
