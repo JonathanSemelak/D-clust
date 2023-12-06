@@ -90,7 +90,6 @@ parser.add_argument('-f', '--format', required=True, help="Input file format ('x
 parser.add_argument('-id', '--id', default=0, help="Intrinsic dimension")
 parser.add_argument('-v', '--visualize', default="False", help="Intrinsic dimension")
 
-
 # If no arguments are provided, print the description and exit
 if len(sys.argv) == 1:
     parser.print_help()
@@ -174,8 +173,6 @@ from dadapy import Data
 from dadapy import plot as pl
 import matplotlib.pyplot as plt
 
-dihetraj = dihetraj[::10] #<----------------TEST
-
 dihetraj = np.clip(dihetraj, 0.001, 359.999) # Clip for numerical stability
 dihetraj = dihetraj*np.pi/180.0 #Converts to radians
 
@@ -236,3 +233,21 @@ else:
     ID=int(ID)
     print("\n The Intrinsid Dimension (ID) was given as input:\n")
     print("\n Input ID:", int(ID) )
+
+print("\n Performing Advanced Density Peaks (ADP) analysis:\n")
+print("\n Clusterizing...\n")
+
+# cluster data via Advanced Density Peak
+d_dihedrals.set_id(ID)
+d_dihedrals.compute_clustering_ADP(Z=4.5,halo=False);
+n_clusters = len(d_dihedrals.cluster_centers)
+print(n_clusters)
+
+pl.get_dendrogram(d_dihedrals, cmap='Set2', logscale=False)
+
+# Cluster populations
+populations = [ len(el) for r_,el in enumerate(d_dihedrals.cluster_indices)]
+print(populations)
+
+# Cluster centers. In the original trajecotory these frames are given by (center + 400) * 10
+print(d_dihedrals.cluster_centers)
