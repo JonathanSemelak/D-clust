@@ -237,7 +237,7 @@ print("\n Clusterizing...\n")
 
 # cluster data via Advanced Density Peak
 d_dihedrals.set_id(ID)
-d_dihedrals.compute_clustering_ADP(Z=4.5,halo=False);
+d_dihedrals.compute_clustering_ADP(Z=1.5,halo=False);
 n_clusters = len(d_dihedrals.cluster_centers)
 print(n_clusters)
 
