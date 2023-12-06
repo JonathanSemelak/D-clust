@@ -137,8 +137,8 @@ if ((file_format=='xyz') or (file_format=='netcdf')): #In this case a file with 
         dihetraj[:,i]=calculate_dihedral(coordinates,dihelist[i][0],dihelist[i][1],dihelist[i][2],dihelist[i][3])
     print("\n This results will be saved to 'dihetraj.dat' file...\n")
     fmt = ['%d'] + ['%.4f'] * ndihe
-    indexes=np.arange(nsteps)
-    np.savetxt('dihetraj.dat',np.column_stack((indexes,dihetraj)),fmt=fmt)
+    indices=np.arange(nsteps)
+    np.savetxt('dihetraj.dat',np.column_stack((indices,dihetraj)),fmt=fmt)
 else: # dihe case (a dihetraj file is provided
     # Open the file and read one line to determine the number of columns (dihe+1)
     print("\n Dihedrals time evolution will be read directly from input file\n")
@@ -162,11 +162,8 @@ dihetraj = dihetraj*np.pi/180.0 #Converts to radians
 d_dihedrals = Data(dihetraj, verbose=False)
 # compute distances by setting the correct period
 d_dihedrals.compute_distances(maxk=dihetraj.shape[0]-1, period=2.*np.pi)
+
 # estimate the intrinsic dimension
-# d_dihedrals.compute_id_2NN()
-
-
-
 if (ID == 0):
     print("\n The scaling of the Intrinsic Dimension will be evaluated using the 2nn and GRIDE methods\n")
     print("\n Computing ID...\n")
@@ -214,7 +211,7 @@ if (ID == 0):
 else:
     ID=int(ID)
     print("\n The Intrinsid Dimension (ID) was given as input:\n")
-    print("\n Input ID:", int(ID) )
+    print("\n Input ID:", int(ID),"\n" )
 
 print("\n Performing Advanced Density Peaks (ADP) analysis:\n")
 print("\n Clusterizing...\n")
@@ -234,20 +231,55 @@ else:
 pl.get_dendrogram(d_dihedrals, cmap='Set2', logscale=False)
 
 # Cluster populations
-populations = [ len(el) for r_,el in enumerate(d_dihedrals.cluster_indices)]
+cluster_indices = d_dihedrals.cluster_indices
+populations = [ len(el) for r_,el in enumerate(cluster_indices)]
 
 print("\n Clusters population:\n")
 print("\n #Cluster  |   #Frames:\n")
-
 for i in range(0, n_clusters):
     print(f" {i:.0f} {populations[i]:.0f}")
 
+# Saves list of indices for each cluster
+print("\n Saving clurters indices...\n")
+print("\n #Cluster  |   #Frames:\n")
+for i in range(0,n_clusters):
+    ith_cluster_indices=cluster_indices[i]
+    ith_cluster_indices=np.array(ith_cluster_indices)
+    ith_cluster_indices_filename='cluster_'+str(int(i))+'_indices.dat'
+    np.savetxt(ith_cluster_indices_filename,ith_cluster_indices,fmt='%i')
+    print(" --> Indices from cluster #"+str(int(i))+" saved in file "+ith_cluster_indices_filename)
+
 
 # Cluster centers. In the original trajecotory these frames are given by (center + 400) * 10
-
 print("\n Clusters centers:\n")
 print("\n #Cluster  |   Center:\n")
 
 centers=d_dihedrals.cluster_centers
 for i in range(0, n_clusters):
     print(f" {i:.0f} {centers[i]:.0f}")
+
+
+# Write stuff
+
+from scipy.io import netcdf
+
+
+if (write_trajs):
+write_trajs=True
+    print("\n Writing trajectory files...:\n")
+
+    selected_indices = [0, 2, 5]  # example indices of frames to keep
+    selected_coordinates = coordinates[selected_indices]
+    selected_indices=cluster_indices[0]
+    # Create a new NETCDF file
+    with netcdf_file('selected_trajectory.nc', 'w') as f:
+        # Define dimensions
+        f.createDimension('frame', len(selected_coordinates))
+        f.createDimension('atom', natoms)
+        f.createDimension('xyz', 3)
+
+        # Create variables
+        coords_var = f.createVariable('coordinates', 'f', ('frame', 'atom', 'xyz'))
+
+        # Write data
+        coords_var[:] = selected_coordinates
