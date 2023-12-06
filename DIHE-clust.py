@@ -3,6 +3,12 @@ import sys
 import math
 import numpy as np
 
+import warnings
+
+# Suppress specific UserWarnings from dadapy
+warnings.filterwarnings('ignore', message="data type is float64: most methods work only with float-type inputs", category=UserWarning, module='dadapy')
+
+
 # def calc_dihedral(data):
 #     ''' The order of the input elements is the natural definition.
 #     A --> B --> C --> D
@@ -56,15 +62,21 @@ script_description = """
     *                                                          *
     *   This tool will help use to extract temporal courses    *
     *   of dihedral angles from your trajectory file and to    *
-    *  analize them using scipy, sklearn and DADApy libraries. *
+    *   analize them the DADApy library.                       *
     *                                                          *
-    *                                                          *
+    *  It is pretty much an automatization tool that follows   *
+    *  the DADApy official tutorial, but it makes it easier    *
+    *  for AMBER users (just bring your .nc and that is all)   *
     *                                                          *
     ************************************************************
 """
 
 def print_welcome_message(script_description):
     print(script_description)
+
+def check_bool(inputvariable,rightvariable):
+    if inputvariable not in ['True','False']:
+        sys.exit("Error: "+ rightvariable + " must be 'True' or 'False'")
 
 #-------------------------------------------
 # Create the parser
@@ -74,6 +86,9 @@ parser.add_argument('-i', '--input', required=True, help='Input file name')
 parser.add_argument('-o', '--output', required=True, help='Output file name')
 parser.add_argument('-d', '--dihelist', default='none', help="A text file with the atom index of each dihedral to be extracted (not needed if format is 'dihe')")
 parser.add_argument('-f', '--format', required=True, help="Input file format ('xyz', 'netcdf'  or 'dihe')")
+parser.add_argument('-id', '--id', default=0, help="Intrinsic dimension")
+parser.add_argument('-v', '--visualize', default="False", help="Intrinsic dimension")
+
 
 # If no arguments are provided, print the description and exit
 if len(sys.argv) == 1:
@@ -88,6 +103,12 @@ input_name = args.input
 output_name = args.output
 dihelist_name = args.dihelist
 file_format = args.format
+ID = args.id
+
+# Checks the variables are str True or False before converting to bool
+check_bool(args.visualize,"--visualize ( -v)")
+visualize = args.visualize == "True"
+
 
 # Conditional import based on file extension
 if (file_format=='xyz'): from ase.io import read
@@ -152,32 +173,65 @@ from dadapy import Data
 from dadapy import plot as pl
 import matplotlib.pyplot as plt
 
-dihetraj=dihetraj[::10]
-dihetraj = np.clip(dihetraj, 0.001, 359.999) # Clip for numerical stability
-dihetraj=dihetraj*np.pi/180.0 #Converts to radians
+dihetraj = dihetraj[::10] #<----------------TEST
 
-print(np.max(dihetraj/(2*np.pi)))
+dihetraj = np.clip(dihetraj, 0.001, 359.999) # Clip for numerical stability
+dihetraj = dihetraj*np.pi/180.0 #Converts to radians
 
 # initialise a Data object
 d_dihedrals = Data(dihetraj, verbose=False)
 # compute distances by setting the correct period
 d_dihedrals.compute_distances(maxk=dihetraj.shape[0]-1, period=2.*np.pi)
 # estimate the intrinsic dimension
-d_dihedrals.compute_id_2NN()
-# ID scaling analysig using two different methods
-ids_2nn, errs_2nn, scales_2nn = d_dihedrals.return_id_scaling_2NN()
-ids_gride, errs_gride, scales_gride = d_dihedrals.return_id_scaling_gride(range_max=1024)
-col = 'darkorange'
-plt.plot(scales_2nn, ids_2nn, alpha=0.85)
-plt.errorbar(scales_2nn, ids_2nn, errs_2nn, fmt='None')
-plt.scatter(scales_2nn, ids_2nn, edgecolors='k',s=50,label='2nn decimation')
-plt.plot(scales_gride, ids_gride, alpha=0.85, color=col)
-plt.errorbar(scales_gride, ids_gride, errs_gride, fmt='None',color=col)
-plt.scatter(scales_gride, ids_gride, edgecolors='k',color=col,s=50,label='2nn gride')
-plt.xlabel(r'Scale',size=15)
-plt.ylabel('Estimated ID',size=15)
-plt.xticks(size=15)
-plt.yticks(size=15)
-plt.legend(frameon=False,fontsize=14)
-plt.tight_layout()
-plt.show()
+# d_dihedrals.compute_id_2NN()
+
+
+
+if (ID == 0):
+    print("\nThe scaling of the Intrinsic Dimension will be evaluated using the 2nn and GRIDE methods\n")
+    print("\nComputing ID...\n")
+
+    # ID scaling analysig using two different methods
+    ids_2nn, errs_2nn, scales_2nn = d_dihedrals.return_id_scaling_2NN()
+    ids_gride, errs_gride, scales_gride = d_dihedrals.return_id_scaling_gride(range_max=1024)
+
+    print("\n 2nn ID scaling:\n")
+    print("\n Scale  | Estimated ID  | Error on ID:\n")
+
+    for i in range(0, len(ids_2nn)):
+        print(f" {scales_2nn[i]:.3f} {ids_2nn[i]:.3f} {errs_2nn[i]:.3f}")
+
+    print("\n GRIDE ID scaling:\n")
+    print("\n Scale  | Estimated ID  | Error on ID:\n")
+
+    for i in range(0, len(ids_gride)):
+        print(f" {scales_gride[i]:.3f} {ids_gride[i]:.3f} {errs_gride[i]:.3f}")
+
+    if (visualize): #This was taken from the DADApy tutorial
+        print("\nShowing plot...\n")
+        col = 'darkorange'
+        plt.plot(scales_2nn, ids_2nn, alpha=0.85)
+        plt.errorbar(scales_2nn, ids_2nn, errs_2nn, fmt='None')
+        plt.scatter(scales_2nn, ids_2nn, edgecolors='k',s=50,label='2nn decimation')
+        plt.plot(scales_gride, ids_gride, alpha=0.85, color=col)
+        plt.errorbar(scales_gride, ids_gride, errs_gride, fmt='None',color=col)
+        plt.scatter(scales_gride, ids_gride, edgecolors='k',color=col,s=50,label='2nn gride')
+        plt.xlabel(r'Scale',size=15)
+        plt.ylabel('Estimated ID',size=15)
+        plt.xticks(size=15)
+        plt.yticks(size=15)
+        plt.legend(frameon=False,fontsize=14)
+        plt.tight_layout()
+        plt.show()
+
+    print("\n Assuming there is a plateu is reached\n")
+    print("\n Make sure this is the case by visualizing the ID scaling!\n")
+    print("\n The ID will be approximated as the maximum between the minimum ID estimation of 2nn and GRIDE\n")
+
+    ID=int(max(np.min(ids_2nn),np.min(ids_gride)))
+
+    print("\n Estimated ID:", int(ID) )
+else:
+    ID=int(ID)
+    print("\n The Intrinsid Dimension (ID) was given as input:\n")
+    print("\n Input ID:", int(ID) )
