@@ -94,7 +94,9 @@ halo = args.halo == "True"
 
 # Conditional import based on file extension
 if (file_format=='xyz'): from ase.io import read
-if (file_format=='netcdf'): from scipy.io import netcdf_file
+if (file_format=='netcdf'): from parmed.amber import NetCDFTraj
+
+
 
 # Call the function at the beginning of your main script execution
 if __name__ == "__main__":
@@ -114,10 +116,10 @@ if (file_format=='xyz'):  # XYZ file case
     for i, frame in enumerate(trajectory):
         coordinates[i] = frame.get_positions()
 elif (file_format=='netcdf'): # NETCDF file case
-    print("\n Coordinates from the netcdf file will be read using the scipy library\n")
+    print("\n Coordinates from the netcdf file will be read using the ParmED library\n")
     print("\n Reading file...\n")
-    trajectory = netcdf_file(input_name, 'r')
-    coordinates = np.array(trajectory.variables['coordinates'].data)
+    trajectory = NetCDFTraj.open_old(input_name)
+    coordinates = np.array(trajectory.coordinates)
     nsteps = len(coordinates)
     natoms = len(coordinates[0])
 
@@ -261,25 +263,24 @@ for i in range(0, n_clusters):
 
 # Write stuff
 
-from scipy.io import netcdf
 
-
-if (write_trajs):
-write_trajs=True
-    print("\n Writing trajectory files...:\n")
-
-    selected_indices = [0, 2, 5]  # example indices of frames to keep
-    selected_coordinates = coordinates[selected_indices]
-    selected_indices=cluster_indices[0]
-    # Create a new NETCDF file
-    with netcdf_file('selected_trajectory.nc', 'w') as f:
-        # Define dimensions
-        f.createDimension('frame', len(selected_coordinates))
-        f.createDimension('atom', natoms)
-        f.createDimension('xyz', 3)
-
-        # Create variables
-        coords_var = f.createVariable('coordinates', 'f', ('frame', 'atom', 'xyz'))
-
-        # Write data
-        coords_var[:] = selected_coordinates
+#
+# if (write_trajs):
+# write_trajs=True
+#     print("\n Writing trajectory files...:\n")
+#
+#     selected_indices = [0, 2, 5]  # example indices of frames to keep
+#     selected_coordinates = coordinates[selected_indices]
+#     selected_indices=cluster_indices[0]
+#     # Create a new NETCDF file
+#     with netcdf_file('selected_trajectory.nc', 'w') as f:
+#         # Define dimensions
+#         f.createDimension('frame', len(selected_coordinates))
+#         f.createDimension('atom', natoms)
+#         f.createDimension('xyz', 3)
+#
+#         # Create variables
+#         coords_var = f.createVariable('coordinates', 'f', ('frame', 'atom', 'xyz'))
+#
+#         # Write data
+#         coords_var[:] = selected_coordinates
