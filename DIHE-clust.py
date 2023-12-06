@@ -8,27 +8,6 @@ import warnings
 # Suppress specific UserWarnings from dadapy
 warnings.filterwarnings('ignore', message="data type is float64: most methods work only with float-type inputs", category=UserWarning, module='dadapy')
 
-
-# def calc_dihedral(data):
-#     ''' The order of the input elements is the natural definition.
-#     A --> B --> C --> D
-#     '''
-#     v1 = data[:,1,:] - data[:,0,:]
-#     v2 = data[:,2,:] - data[:,1,:]
-#     v3 = data[:,3,:] - data[:,2,:]
-#
-#     n1 = np.cross(v1,v2)
-#     n2 = np.cross(v2,v3)
-#
-#     dot = (n1 * n2).sum(axis=1)
-#     norm1 = np.linalg.norm(n1,axis=1)
-#     norm2 = np.linalg.norm(n2,axis=1)
-#
-#     phi = np.arccos(dot / (norm1 * norm2))
-#     return np.degrees(phi)
-#
-# import numpy as np
-
 def calculate_dihedral(trajectory, i, j, k, l):
     dihedrals = []
     for step in trajectory:
@@ -60,7 +39,7 @@ script_description = """
     *                                                          *
     *           Welcome to the D-clust Python Script!          *
     *                                                          *
-    *   This tool will help use to extract temporal courses    *
+    *   This tool will help you to extract temporal courses    *
     *   of dihedral angles from your trajectory file and to    *
     *   analize them with the DADApy library.                  *
     *                                                          *
