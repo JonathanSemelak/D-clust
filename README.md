@@ -1,7 +1,9 @@
 # DIHE-clust
 
-This python code helps to analyze the conformational landscape of a certain molecule by extracting the dihedrals angles obtained from a molecular dynamics (MD) trajectory.
+## Welcome to the D-clust Python Script!  
 
-Its purpose is mainly related with automatization of data extraction and data analysis, using other libraries.
+This tool will help use to extract temporal courses of dihedral angles from your
+trajectory file and to analize them with the DADApy library.       
 
-It reads .xyz and .netcdf files, and uses sklearn and DADApy to analize the data.
+It's pretty much an automatization tool that follows the DADApy official tutorial,
+but it makes it easier for AMBER users.                                    
