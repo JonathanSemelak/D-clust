@@ -88,6 +88,8 @@ parser.add_argument('-d', '--dihelist', default='none', help="A text file with t
 parser.add_argument('-f', '--format', required=True, help="Input file format ('xyz', 'netcdf'  or 'dihe')")
 parser.add_argument('-id', '--id', default=0, help="Intrinsic dimension")
 parser.add_argument('-v', '--visualize', default="False", help="Intrinsic dimension")
+parser.add_argument('-ha', '--halo', default="False", help="Use halo for ADP")
+parser.add_argument('-z', '--zvalue',  default=3.5, help="Z value for ADP")
 
 # If no arguments are provided, print the description and exit
 if len(sys.argv) == 1:
@@ -101,12 +103,15 @@ args = parser.parse_args()
 input_name = args.input
 dihelist_name = args.dihelist
 file_format = args.format
+z_value = args.zvalue
 ID = args.id
 
 # Checks the variables are str True or False before converting to bool
 check_bool(args.visualize,"--visualize ( -v)")
 visualize = args.visualize == "True"
 
+check_bool(args.halo,"--halo ( -ha)")
+halo = args.halo == "True"
 
 # Conditional import based on file extension
 if (file_format=='xyz'): from ase.io import read
@@ -121,8 +126,8 @@ if __name__ == "__main__":
 
 # Reads data
 if (file_format=='xyz'):  # XYZ file case
-    print("\nCoordinates from the xyz file will be read using the ASE library\n")
-    print("\nReading file...\n")
+    print("\n Coordinates from the xyz file will be read using the ASE library\n")
+    print("\n Reading file...\n")
     trajectory = read(input_name, index=':')
     nsteps = len(trajectory)
     natoms = len(trajectory[0])
@@ -130,8 +135,8 @@ if (file_format=='xyz'):  # XYZ file case
     for i, frame in enumerate(trajectory):
         coordinates[i] = frame.get_positions()
 elif (file_format=='netcdf'): # NETCDF file case
-    print("\nCoordinates from the netcdf file will be read using the scipy library\n")
-    print("\nReading file...\n")
+    print("\n Coordinates from the netcdf file will be read using the scipy library\n")
+    print("\n Reading file...\n")
     trajectory = netcdf_file(input_name, 'r')
     coordinates = np.array(trajectory.variables['coordinates'].data)
     nsteps = len(coordinates)
@@ -147,18 +152,18 @@ if ((file_format=='xyz') or (file_format=='netcdf')): #In this case a file with 
         dihelist=dihelist.astype(int)
     ndihe = len(dihelist)
     dihetraj = np.empty((nsteps,ndihe))
-    print("\nCalculating dihedrals temporal traces...\n")
+    print("\n Calculating dihedrals temporal traces...\n")
     for i in range(0,ndihe):
-        print("--> Dihedral", i+1, "(out of ",ndihe, ")")
+        print(" --> Dihedral", i+1, "( out of ",ndihe,")")
         dihetraj[:,i]=calculate_dihedral(coordinates,dihelist[i][0],dihelist[i][1],dihelist[i][2],dihelist[i][3])
-    print("\nThis results will be saved to 'dihetraj.dat' file...\n")
+    print("\n This results will be saved to 'dihetraj.dat' file...\n")
     fmt = ['%d'] + ['%.4f'] * ndihe
     indexes=np.arange(nsteps)
     np.savetxt('dihetraj.dat',np.column_stack((indexes,dihetraj)),fmt=fmt)
 else: # dihe case (a dihetraj file is provided
     # Open the file and read one line to determine the number of columns (dihe+1)
-    print("\nDihedrals time evolution will be read directly from input file\n")
-    print("\nReading file...\n")
+    print("\n Dihedrals time evolution will be read directly from input file\n")
+    print("\n Reading file...\n")
     with open(input_name, 'r') as file:
       first_line = file.readline()
     ndihe = len(first_line.split())-1
@@ -184,8 +189,8 @@ d_dihedrals.compute_distances(maxk=dihetraj.shape[0]-1, period=2.*np.pi)
 
 
 if (ID == 0):
-    print("\nThe scaling of the Intrinsic Dimension will be evaluated using the 2nn and GRIDE methods\n")
-    print("\nComputing ID...\n")
+    print("\n The scaling of the Intrinsic Dimension will be evaluated using the 2nn and GRIDE methods\n")
+    print("\n Computing ID...\n")
 
     # ID scaling analysig using two different methods
     ids_2nn, errs_2nn, scales_2nn = d_dihedrals.return_id_scaling_2NN()
@@ -204,7 +209,7 @@ if (ID == 0):
         print(f" {scales_gride[i]:.3f} {ids_gride[i]:.3f} {errs_gride[i]:.3f}")
 
     if (visualize): #This was taken from the DADApy tutorial
-        print("\nShowing plot...\n")
+        print("\n Showing plot...\n")
         col = 'darkorange'
         plt.plot(scales_2nn, ids_2nn, alpha=0.85)
         plt.errorbar(scales_2nn, ids_2nn, errs_2nn, fmt='None')
@@ -220,7 +225,7 @@ if (ID == 0):
         plt.tight_layout()
         plt.show()
 
-    print("\n Assuming there is a plateu is reached\n")
+    print("\n Assuming a plateu is reached\n")
     print("\n Make sure this is the case by visualizing the ID scaling!\n")
     print("\n The ID will be approximated as the maximum between the minimum ID estimation of 2nn and GRIDE\n")
 
@@ -237,15 +242,33 @@ print("\n Clusterizing...\n")
 
 # cluster data via Advanced Density Peak
 d_dihedrals.set_id(ID)
-d_dihedrals.compute_clustering_ADP(Z=1.5,halo=False);
+d_dihedrals.compute_clustering_ADP(Z=float(z_value),halo=halo);
 n_clusters = len(d_dihedrals.cluster_centers)
-print(n_clusters)
+
+print("\n Performing Advanced Density Peaks (ADP) analysis:\n")
+
+if (halo):
+    print("\n Number of clusters found:", int(n_clusters) ,"(Z value =", z_value, " with halo points) \n")
+else:
+    print("\n Number of clusters found:", int(n_clusters) ,"(Z value =", z_value, " no halo points) \n")
 
 pl.get_dendrogram(d_dihedrals, cmap='Set2', logscale=False)
 
 # Cluster populations
 populations = [ len(el) for r_,el in enumerate(d_dihedrals.cluster_indices)]
-print(populations)
+
+print("\n Clusters population:\n")
+print("\n #Cluster  |   #Frames:\n")
+
+for i in range(0, n_clusters):
+    print(f" {i:.0f} {populations[i]:.0f}")
+
 
 # Cluster centers. In the original trajecotory these frames are given by (center + 400) * 10
-print(d_dihedrals.cluster_centers)
+
+print("\n Clusters centers:\n")
+print("\n #Cluster  |   Center:\n")
+
+centers=d_dihedrals.cluster_centers
+for i in range(0, n_clusters):
+    print(f" {i:.0f} {centers[i]:.0f}")
