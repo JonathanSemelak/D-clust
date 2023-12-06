@@ -84,7 +84,6 @@ def check_bool(inputvariable,rightvariable):
 parser = argparse.ArgumentParser(description=script_description,formatter_class=argparse.RawDescriptionHelpFormatter)
 # Define the command-line arguments
 parser.add_argument('-i', '--input', required=True, help='Input file name')
-parser.add_argument('-o', '--output', required=True, help='Output file name')
 parser.add_argument('-d', '--dihelist', default='none', help="A text file with the atom index of each dihedral to be extracted (not needed if format is 'dihe')")
 parser.add_argument('-f', '--format', required=True, help="Input file format ('xyz', 'netcdf'  or 'dihe')")
 parser.add_argument('-id', '--id', default=0, help="Intrinsic dimension")
@@ -100,7 +99,6 @@ args = parser.parse_args()
 
 # Assign values from args
 input_name = args.input
-output_name = args.output
 dihelist_name = args.dihelist
 file_format = args.format
 ID = args.id
