@@ -8,7 +8,6 @@ def get_dendrogram_custom(Data, cmap="viridis", savefig="", logscale=True, showp
     .
     .
     .
-    
     Generate a visualisation of the topography computed with ADP.
     The only difference is that it makes optional to show the plot.
 
