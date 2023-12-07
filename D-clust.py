@@ -96,6 +96,9 @@ halo = args.halo == "True"
 if (file_format=='xyz'): from ase.io import read
 if (file_format=='netcdf'): from parmed.amber import NetCDFTraj
 
+warnings.filterwarnings('ignore', message='Could not find netCDF4 module. Falling back on ', category=UserWarning, module='parmed.amber')
+
+
 
 
 # Call the function at the beginning of your main script execution
