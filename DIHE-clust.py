@@ -2,7 +2,6 @@ import argparse
 import sys
 import math
 import numpy as np
-
 import warnings
 
 # Suppress specific UserWarnings from dadapy
