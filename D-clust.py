@@ -292,6 +292,9 @@ parser.add_argument('-id', '--id', default=0, help="Intrinsic dimension")
 parser.add_argument('-v', '--visualize', default="False", help="Intrinsic dimension")
 parser.add_argument('-ha', '--halo', default="False", help="Use halo for ADP")
 parser.add_argument('-z', '--zvalue',  default=3.5, help="Z value for ADP")
+parser.add_argument('-wt', '--writetrajs', default="False", help="Write a trajectory file for each cluster")
+parser.add_argument('-wf', '--writefreq', default=1, help="Writting frequence (for --writetrajs/-wt option)")
+
 
 # If no arguments are provided, print the description and exit
 if len(sys.argv) == 1:
@@ -307,6 +310,7 @@ dihelist_name = args.dihelist
 file_format = args.format
 z_value = args.zvalue
 ID = args.id
+freq_write = args.writefreq
 
 # Checks the variables are str True or False before converting to bool
 check_bool(args.visualize,"--visualize ( -v)")
@@ -314,6 +318,10 @@ visualize = args.visualize == "True"
 
 check_bool(args.halo,"--halo ( -ha)")
 halo = args.halo == "True"
+
+check_bool(args.write_trajs,"--writetrajs ( -wt)")
+halo = args.write_trajs == "True"
+
 
 # Conditional import based on file extension
 if (file_format=='xyz'): from ase.io import read
