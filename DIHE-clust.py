@@ -137,7 +137,7 @@ if ((file_format=='xyz') or (file_format=='netcdf')): #In this case a file with 
     for i in range(0,ndihe):
         print(" --> Dihedral", i+1, "( out of ",ndihe,")")
         dihetraj[:,i]=calculate_dihedral(coordinates,dihelist[i][0],dihelist[i][1],dihelist[i][2],dihelist[i][3])
-    print("\n This results will be saved to 'dihetraj.dat' file...\n")
+    print("\n These results will be saved to 'dihetraj.dat' file...\n")
     fmt = ['%d'] + ['%.4f'] * ndihe
     indices=np.arange(nsteps)
     np.savetxt('dihetraj.dat',np.column_stack((indices,dihetraj)),fmt=fmt)
@@ -230,7 +230,9 @@ if (halo):
 else:
     print("\n Number of clusters found:", int(n_clusters) ,"(Z value =", z_value, " no halo points) \n")
 
-pl.get_dendrogram(d_dihedrals, cmap='Set2', logscale=False)
+if (visualize):
+    pl.get_dendrogram(d_dihedrals, cmap='Set2', savefig="TEST.png", logscale=False)
+
 
 # Cluster populations
 cluster_indices = d_dihedrals.cluster_indices
@@ -278,9 +280,9 @@ if (write_trajs and not file_format == 'dihe'):
             crd = NetCDFTraj.open_new(ith_cluster_traj_filename, natom=natoms, box=False,
                                      crds=True, vels=False, frcs=False)
             selected_coordinates=coordinates[ith_cluster_indices]
-            for i in range(0,len(selected_coordinates)):
-                if (i%freq_write == 0):
-                    crd.add_coordinates(selected_coordinates[i])
+            for j in range(0,len(selected_coordinates)):
+                if (j%freq_write == 0):
+                    crd.add_coordinates(selected_coordinates[j])
             # Close the file
             crd.close()
             print(" --> Frames belonging to cluster #"+str(int(i))+" saved in trajectory file "+ith_cluster_traj_filename)
