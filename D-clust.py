@@ -5,6 +5,7 @@ import numpy as np
 import warnings
 import matplotlib.pyplot as plt
 from matplotlib import cm
+
 def get_dendrogram_custom(Data, cmap="viridis", savefig="", logscale=True, showplot=False):
 
     """
