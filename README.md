@@ -4,7 +4,7 @@
 
 This code is pretty much an automatization tool that follows the DADApy 
 official tutorial, but it makes it easier for AMBER users because amber 
-netcdf files can be provided as input directly
+netcdf files can be provided as input directly.
 
 It can extract temporal courses of dihedral angles from your
 trajectory file and to analize them with the DADApy library using the 
