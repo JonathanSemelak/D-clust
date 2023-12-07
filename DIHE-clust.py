@@ -3,6 +3,7 @@ import sys
 import math
 import numpy as np
 import warnings
+from plot_functions import *
 
 # Suppress specific UserWarnings from dadapy
 warnings.filterwarnings('ignore', message="data type is float64: most methods work only with float-type inputs", category=UserWarning, module='dadapy')
@@ -153,7 +154,7 @@ else: # dihe case (a dihetraj file is provided
 
 #From now onwards, we will be working with the dihetraj array (nsteps,ndihe)
 from dadapy import Data
-from dadapy import plot as pl
+# from dadapy import plot as pl
 import matplotlib.pyplot as plt
 
 dihetraj = np.clip(dihetraj, 0.001, 359.999) # Clip for numerical stability
@@ -186,21 +187,11 @@ if (ID == 0):
         print(f" {scales_gride[i]:.3f} {ids_gride[i]:.3f} {errs_gride[i]:.3f}")
 
     if (visualize): #This was taken from the DADApy tutorial
-        print("\n Showing plot...\n")
-        col = 'darkorange'
-        plt.plot(scales_2nn, ids_2nn, alpha=0.85)
-        plt.errorbar(scales_2nn, ids_2nn, errs_2nn, fmt='None')
-        plt.scatter(scales_2nn, ids_2nn, edgecolors='k',s=50,label='2nn decimation')
-        plt.plot(scales_gride, ids_gride, alpha=0.85, color=col)
-        plt.errorbar(scales_gride, ids_gride, errs_gride, fmt='None',color=col)
-        plt.scatter(scales_gride, ids_gride, edgecolors='k',color=col,s=50,label='2nn gride')
-        plt.xlabel(r'Scale',size=15)
-        plt.ylabel('Estimated ID',size=15)
-        plt.xticks(size=15)
-        plt.yticks(size=15)
-        plt.legend(frameon=False,fontsize=14)
-        plt.tight_layout()
-        plt.show()
+        print("\n Showing plot ID scaling plot...\n")
+        plot_ID_scaling(scales_2nn,ids_2nn,errs_2nn,scales_gride,ids_gride, errs_gride, savefig="ID_scaling.svg", showplot=True)
+    else:
+        plot_ID_scaling(scales_2nn,ids_2nn,errs_2nn,scales_gride,ids_gride, errs_gride, savefig="ID_scaling.svg", showplot=False)
+    print("\n ---> ID scaling plot saved to ID_scaling.svg file\n")
 
     print("\n Assuming a plateu is reached\n")
     print("\n Make sure this is the case by visualizing the ID scaling!\n")
@@ -230,7 +221,12 @@ else:
     print("\n Number of clusters found:", int(n_clusters) ,"(Z value =", z_value, " no halo points) \n")
 
 if (visualize):
-    pl.get_dendrogram(d_dihedrals, cmap='Set2', savefig="TEST.png", logscale=False)
+    print("\n Showing dendrogram plot...\n")
+    get_dendrogram_custom(d_dihedrals, cmap='Set2', savefig="dendogram.svg", logscale=False,showplot=True)
+else:
+    get_dendrogram_custom(d_dihedrals, cmap='Set2', savefig="dendogram.svg", logscale=False,showplot=False)
+print("\n ---> Dendrogram plot saved to dendogram.svg file\n")
+
 
 
 # Cluster populations
@@ -266,7 +262,7 @@ write_trajs=True
 freq_write=1
 
 # Cluster centers. In the original trajecotory these frames are given by (center + 400) * 10
-print("\n Saving trajectories for each cluster (writing frequence = ", int(freq_write) ," ):\n")
+print("\n Saving trajectories for each cluster (writing frequence = ", int(freq_write) ,"):\n")
 print("\n Generating trajectory files...\n")
 
 if (write_trajs and not file_format == 'dihe'):
