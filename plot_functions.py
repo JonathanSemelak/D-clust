@@ -1,10 +1,14 @@
-dendogram clustering
 
 def get_dendrogram_custom(Data, cmap="viridis", savefig="", logscale=True, showplot=False):
 
     """
     This is a modification of the "get_dendrogram" function from DADApy.
 
+    All rights reverved to the DADApy authors.
+    .
+    .
+    .
+    
     Generate a visualisation of the topography computed with ADP.
     The only difference is that it makes optional to show the plot.
 
