@@ -214,7 +214,7 @@ def plot_ID_scaling(scales_2nn,ids_2nn,errs_2nn,scales_gride,ids_gride, errs_gri
     plt.scatter(scales_2nn, ids_2nn, edgecolors='k',s=50,label='2nn decimation')
     plt.plot(scales_gride, ids_gride, alpha=0.85, color=col)
     plt.errorbar(scales_gride, ids_gride, errs_gride, fmt='None',color=col)
-    plt.scatter(scales_gride, ids_gride, edgecolors='k',color=col,s=50,label='2nn gride')
+    plt.scatter(scales_gride, ids_gride, edgecolors='k',color=col,s=50,label='GRIDE')
     plt.xlabel(r'Scale',size=15)
     plt.ylabel('Estimated ID',size=15)
     plt.xticks(size=15)
