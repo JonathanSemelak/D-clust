@@ -220,7 +220,7 @@ def plot_ID_scaling(scales_2nn,ids_2nn,errs_2nn,scales_gride,ids_gride, errs_gri
     plt.xticks(size=15)
     plt.yticks(size=15)
     plt.legend(frameon=False,fontsize=14)
-    lt.tight_layout()
+    plt.tight_layout()
     plt.show()
 
     if savefig != "":
