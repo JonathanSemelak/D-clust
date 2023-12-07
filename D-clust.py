@@ -330,8 +330,6 @@ if (file_format=='netcdf'): from parmed.amber import NetCDFTraj
 warnings.filterwarnings('ignore', message='Could not find netCDF4 module. Falling back on ', category=UserWarning, module='parmed.amber')
 
 
-
-
 # Call the function at the beginning of your main script execution
 if __name__ == "__main__":
     print_welcome_message(script_description)
@@ -491,10 +489,6 @@ print("\n #Cluster  |   Center:\n")
 centers=d_dihedrals.cluster_centers
 for i in range(0, n_clusters):
     print(f" {i:.0f} {centers[i]:.0f}")
-
-# Write stuff
-write_trajs=True
-freq_write=1
 
 # Cluster centers. In the original trajecotory these frames are given by (center + 400) * 10
 print("\n Saving trajectories for each cluster (writing frequence = ", int(freq_write) ,"):\n")
