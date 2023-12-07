@@ -319,8 +319,8 @@ visualize = args.visualize == "True"
 check_bool(args.halo,"--halo ( -ha)")
 halo = args.halo == "True"
 
-check_bool(args.write_trajs,"--writetrajs ( -wt)")
-halo = args.write_trajs == "True"
+check_bool(args.writetrajs,"--writetrajs ( -wt)")
+halo = args.writetrajs == "True"
 
 
 # Conditional import based on file extension
