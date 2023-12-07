@@ -223,14 +223,15 @@ if (halo):
 else:
     print("\n Number of clusters found:", int(n_clusters) ,"(Z value =", z_value, " no halo points) \n")
 
-if (visualize):
-    print("\n Showing dendrogram plot...\n")
-    get_dendrogram_custom(d_dihedrals, cmap='Set2', savefig="dendogram.svg", logscale=False,showplot=True)
+if(n_clusters > 1):
+    if (visualize):
+        print("\n Showing dendrogram plot...\n")
+        get_dendrogram_custom(d_dihedrals, cmap='Set2', savefig="dendogram.svg", logscale=False,showplot=True)
+    else:
+        get_dendrogram_custom(d_dihedrals, cmap='Set2', savefig="dendogram.svg", logscale=False,showplot=False)
+    print("\n ---> Dendrogram plot saved to dendogram.svg file\n")
 else:
-    get_dendrogram_custom(d_dihedrals, cmap='Set2', savefig="dendogram.svg", logscale=False,showplot=False)
-print("\n ---> Dendrogram plot saved to dendogram.svg file\n")
-
-
+    print("\n Only 1 cluster found, no dendrogram will be generated...\n")
 
 # Cluster populations
 cluster_indices = d_dihedrals.cluster_indices
