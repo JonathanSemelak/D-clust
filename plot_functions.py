@@ -208,7 +208,6 @@ def get_dendrogram_custom(Data, cmap="viridis", savefig="", logscale=True, showp
         plt.show()
 
 def plot_ID_scaling(scales_2nn,ids_2nn,errs_2nn,scales_gride,ids_gride, errs_gride, savefig="", showplot=False):
-        print("\n Showing plot...\n")
         col = 'darkorange'
         plt.plot(scales_2nn, ids_2nn, alpha=0.85)
         plt.errorbar(scales_2nn, ids_2nn, errs_2nn, fmt='None')
