@@ -525,7 +525,6 @@ for i in range(0,n_clusters):
 
 
 # Write trajs
-
 if (write_trajs and not file_format == 'dihe'):
     print("\n Generating trajectory files...\n")
     print("\n Saving trajectories for each cluster (writing frequence = ", int(freq_write) ,"):\n")
@@ -544,6 +543,36 @@ if (write_trajs and not file_format == 'dihe'):
             # Close the file
             crd.close()
             print(" --> Frames belonging to cluster #"+str(int(i))+" saved in trajectory file "+ith_cluster_traj_filename)
+        if(halo):
+            print("\n Saving halo-separeted trajectories for each cluster (writing frequence = ", int(freq_write) ,"):\n")
+            for i in range(0, n_clusters):
+                ith_cluster_indices_halos=cluster_indices_halos[i]
+                ith_cluster_indices_halos=np.array(ith_cluster_indices_halos)
+                ith_cluster_traj_filename_halos='cluster_'+str(int(i))+'_halos_traj.nc'
+                # Open the NetCDF trajectory file for writing
+                crd = NetCDFTraj.open_new(ith_cluster_traj_filename_halos, natom=natoms, box=False,
+                                         crds=True, vels=False, frcs=False)
+                selected_coordinates=coordinates[ith_cluster_indices_halos]
+                for j in range(0,len(selected_coordinates)):
+                    if (j%freq_write == 0):
+                        crd.add_coordinates(selected_coordinates[j])
+                # Close the file
+                crd.close()
+                print(" --> Frames belonging to cluster #"+str(int(i))+" halo points saved in trajectory file "+ith_cluster_traj_filename_halos)
+            for i in range(0, n_clusters):
+                ith_cluster_indices_no_halos=cluster_indices_no_halos[i]
+                ith_cluster_indices_no_halos=np.array(ith_cluster_indices_no_halos)
+                ith_cluster_traj_filename_no_halos='cluster_'+str(int(i))+'_no_halos_traj.nc'
+                # Open the NetCDF trajectory file for writing
+                crd = NetCDFTraj.open_new(ith_cluster_traj_filename_no_halos, natom=natoms, box=False,
+                                         crds=True, vels=False, frcs=False)
+                selected_coordinates=coordinates[ith_cluster_indices_no_halos]
+                for j in range(0,len(selected_coordinates)):
+                    if (j%freq_write == 0):
+                        crd.add_coordinates(selected_coordinates[j])
+                # Close the file
+                crd.close()
+                print(" --> Frames belonging to cluster #"+str(int(i))+" without halo points saved in trajectory file "+ith_cluster_traj_filename_no_halos)
 
 
 print("\n Saving coordinats for each cluster center:\n")
