@@ -320,7 +320,7 @@ check_bool(args.halo,"--halo ( -ha)")
 halo = args.halo == "True"
 
 check_bool(args.writetrajs,"--writetrajs ( -wt)")
-halo = args.writetrajs == "True"
+writetrajs = args.writetrajs == "True"
 
 
 # Conditional import based on file extension
@@ -481,14 +481,44 @@ for i in range(0,n_clusters):
     np.savetxt(ith_cluster_indices_filename,ith_cluster_indices,fmt='%i')
     print(" --> Indices from cluster #"+str(int(i))+" saved in file "+ith_cluster_indices_filename)
 
-
-# Cluster centers. In the original trajecotory these frames are given by (center + 400) * 10
+# Prints cluster centers
 print("\n Clusters centers:\n")
 print("\n #Cluster  |   Center:\n")
 
 centers=d_dihedrals.cluster_centers
 for i in range(0, n_clusters):
     print(f" {i:.0f} {centers[i]:.0f}")
+
+# Halo points analysis
+if (halo):
+    cluster_indices_no_halos=[]
+    cluster_indices_halos=[]
+    assignment = d_dihedrals.assignment
+    print("\n Performing analysis of halo points...\n")
+    for i in range(0,len(n_clusters)):
+        ith_cluster_indices=cluster_indices[i]
+        ith_cluster_indices_no_halos=[]
+        ith_cluster_indices_halos=[]
+        for index in ith_cluster_indices:
+            ishalo = (assignment == -1)
+            if ishalo:
+                ith_cluster_indices_halos.append(index)
+            else:
+                ith_cluster_indices_no_halos.append(index)
+        cluster_indices_halos.append(ith_cluster_indices_halos)
+        cluster_indices_no_halos.append(ith_cluster_indices_no_halos)
+
+    # Prints halo points
+    print("\n Clusters halo points:\n")
+    print("\n #Cluster  |   #Halo points\n")
+    for i in range(0, n_clusters):
+        print(f" {i:.0f} {len(cluster_indices_halos[i]):.0f}")
+
+    # Prints no halo points
+    print("\n Clusters no halo points:\n")
+    print("\n #Cluster  |   #No halo points\n")
+    for i in range(0, n_clusters):
+        print(f" {i:.0f} {len(cluster_indices_no_halos[i]):.0f}")
 
 # Cluster centers. In the original trajecotory these frames are given by (center + 400) * 10
 print("\n Saving trajectories for each cluster (writing frequence = ", int(freq_write) ,"):\n")
