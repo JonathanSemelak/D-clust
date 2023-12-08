@@ -310,7 +310,7 @@ dihelist_name = args.dihelist
 file_format = args.format
 z_value = args.zvalue
 ID = args.id
-freq_write = args.writefreq
+freq_write = int(args.writefreq)
 
 # Checks the variables are str True or False before converting to bool
 check_bool(args.visualize,"--visualize ( -v)")
@@ -320,7 +320,7 @@ check_bool(args.halo,"--halo ( -ha)")
 halo = args.halo == "True"
 
 check_bool(args.writetrajs,"--writetrajs ( -wt)")
-writetrajs = args.writetrajs == "True"
+write_trajs = args.writetrajs == "True"
 
 
 # Conditional import based on file extension
@@ -450,7 +450,7 @@ print("\n Performing Advanced Density Peaks (ADP) analysis:\n")
 if (halo):
     print("\n Number of clusters found:", int(n_clusters) ,"(Z value =", z_value, " with halo points) \n")
 else:
-    print("\n Number of clusters found:", int(n_clusters) ,"(Z value =", z_value, " no halo points) \n")
+    print("\n Number of clusters found:", int(n_clusters) ,"(Z value =", z_value, " without halo points) \n")
 
 if(n_clusters > 1):
     if (visualize):
@@ -462,25 +462,6 @@ if(n_clusters > 1):
 else:
     print("\n Only 1 cluster found, no dendrogram will be generated...\n")
 
-# Cluster populations
-cluster_indices = d_dihedrals.cluster_indices
-populations = [ len(el) for r_,el in enumerate(cluster_indices)]
-
-print("\n Clusters population:\n")
-print("\n #Cluster  |   #Frames:\n")
-for i in range(0, n_clusters):
-    print(f" {i:.0f} {populations[i]:.0f}")
-
-# Saves list of indices for each cluster
-print("\n Saving clurters indices...\n")
-print("\n #Cluster  |   #Frames:\n")
-for i in range(0,n_clusters):
-    ith_cluster_indices=cluster_indices[i]
-    ith_cluster_indices=np.array(ith_cluster_indices)
-    ith_cluster_indices_filename='cluster_'+str(int(i))+'_indices.dat'
-    np.savetxt(ith_cluster_indices_filename,ith_cluster_indices,fmt='%i')
-    print(" --> Indices from cluster #"+str(int(i))+" saved in file "+ith_cluster_indices_filename)
-
 # Prints cluster centers
 print("\n Clusters centers:\n")
 print("\n #Cluster  |   Center:\n")
@@ -489,18 +470,29 @@ centers=d_dihedrals.cluster_centers
 for i in range(0, n_clusters):
     print(f" {i:.0f} {centers[i]:.0f}")
 
+# Cluster populations and densities
+cluster_indices = d_dihedrals.cluster_indices
+populations = [ len(el) for r_,el in enumerate(cluster_indices)]
+densities = d_dihedrals.log_den
+
+print("\n Clusters population:\n")
+print("\n #Cluster  |   #Frames  | Log Density (center):\n")
+for i in range(0, n_clusters):
+    print(f" {i:.0f} {populations[i]:.0f} {densities[centers[i]]:.3f}")
+
+
 # Halo points analysis
 if (halo):
     cluster_indices_no_halos=[]
     cluster_indices_halos=[]
-    assignment = d_dihedrals.assignment
+    assignment = d_dihedrals.cluster_assignment
     print("\n Performing analysis of halo points...\n")
-    for i in range(0,len(n_clusters)):
+    for i in range(0,n_clusters):
         ith_cluster_indices=cluster_indices[i]
         ith_cluster_indices_no_halos=[]
         ith_cluster_indices_halos=[]
         for index in ith_cluster_indices:
-            ishalo = (assignment == -1)
+            ishalo = (assignment[index] == -1)
             if ishalo:
                 ith_cluster_indices_halos.append(index)
             else:
@@ -520,11 +512,23 @@ if (halo):
     for i in range(0, n_clusters):
         print(f" {i:.0f} {len(cluster_indices_no_halos[i]):.0f}")
 
-# Cluster centers. In the original trajecotory these frames are given by (center + 400) * 10
-print("\n Saving trajectories for each cluster (writing frequence = ", int(freq_write) ,"):\n")
-print("\n Generating trajectory files...\n")
+
+# Saves list of indices for each cluster
+print("\n Saving clurters indices...\n")
+print("\n #Cluster  |   #Frames:\n")
+for i in range(0,n_clusters):
+    ith_cluster_indices=cluster_indices[i]
+    ith_cluster_indices=np.array(ith_cluster_indices)
+    ith_cluster_indices_filename='cluster_'+str(int(i))+'_indices.dat'
+    np.savetxt(ith_cluster_indices_filename,ith_cluster_indices,fmt='%i')
+    print(" --> Indices from cluster #"+str(int(i))+" saved in file "+ith_cluster_indices_filename)
+
+
+# Write trajs
 
 if (write_trajs and not file_format == 'dihe'):
+    print("\n Generating trajectory files...\n")
+    print("\n Saving trajectories for each cluster (writing frequence = ", int(freq_write) ,"):\n")
     if (file_format=='netcdf'):
         for i in range(0, n_clusters):
             ith_cluster_indices=cluster_indices[i]
@@ -540,11 +544,15 @@ if (write_trajs and not file_format == 'dihe'):
             # Close the file
             crd.close()
             print(" --> Frames belonging to cluster #"+str(int(i))+" saved in trajectory file "+ith_cluster_traj_filename)
-        for i in range(0, n_clusters):
-            ith_cluster_centroid_filename='cluster_'+str(int(i))+'_center.nc'
-            # Open the NetCDF trajectory file for writing
-            crd = NetCDFTraj.open_new(ith_cluster_centroid_filename, natom=natoms, box=False,
-                                     crds=True, vels=False, frcs=False)
-            crd.add_coordinates(coordinates[int(centers[i])])
-            crd.close()
-            print(" --> Coordinates of the center of cluster #"+str(int(i))+" saved in file "+ith_cluster_centroid_filename)
+
+
+print("\n Saving coordinats for each cluster center:\n")
+if (file_format=='netcdf'):
+    for i in range(0, n_clusters):
+        ith_cluster_centroid_filename='cluster_'+str(int(i))+'_center.nc'
+        # Open the NetCDF trajectory file for writing
+        crd = NetCDFTraj.open_new(ith_cluster_centroid_filename, natom=natoms, box=False,
+                                 crds=True, vels=False, frcs=False)
+        crd.add_coordinates(coordinates[int(centers[i])])
+        crd.close()
+        print(" --> Coordinates of the center of cluster #"+str(int(i))+" saved in file "+ith_cluster_centroid_filename)
