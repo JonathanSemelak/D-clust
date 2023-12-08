@@ -294,6 +294,7 @@ parser.add_argument('-ha', '--halo', default="False", help="Use halo for ADP")
 parser.add_argument('-z', '--zvalue',  default=3.5, help="Z value for ADP")
 parser.add_argument('-wt', '--writetrajs', default="False", help="Write a trajectory file for each cluster")
 parser.add_argument('-wf', '--writefreq', default=1, help="Writting frequence (for --writetrajs/-wt option)")
+parser.add_argument('-nj', '--njobs', default=1, help="Number of threads for ADP calculation")
 
 
 # If no arguments are provided, print the description and exit
@@ -311,6 +312,7 @@ file_format = args.format
 z_value = args.zvalue
 ID = args.id
 freq_write = int(args.writefreq)
+njobs = int(args.njobs)
 
 # Checks the variables are str True or False before converting to bool
 check_bool(args.visualize,"--visualize ( -v)")
@@ -393,7 +395,7 @@ dihetraj = np.clip(dihetraj, 0.001, 359.999) # Clip for numerical stability
 dihetraj = dihetraj*np.pi/180.0 #Converts to radians
 
 # initialise a Data object
-d_dihedrals = Data(dihetraj, verbose=False)
+d_dihedrals = Data(dihetraj, verbose=False,njobs=njobs)
 # compute distances by setting the correct period
 d_dihedrals.compute_distances(maxk=dihetraj.shape[0]-1, period=2.*np.pi)
 
