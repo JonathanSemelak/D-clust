@@ -296,7 +296,7 @@ parser.add_argument('-wt', '--writetrajs', default="False", help="Write a trajec
 parser.add_argument('-wf', '--writefreq', default=1, help="Writting frequence (for --writetrajs/-wt option)")
 parser.add_argument('-nj', '--njobs', default=1, help="Number of threads for ADP calculation")
 parser.add_argument('-s', '--slice', nargs=2, type=int, default=[0, 0], help='Analize a slice of the data (frame count starts with zero)')
-
+parser.add_argument('-rc', '--randomchoice', default=0, type=int, help="Makes a random choice of --randomchoice/-rc frames")
 
 # If no arguments are provided, print the description and exit
 if len(sys.argv) == 1:
@@ -315,7 +315,9 @@ ID = args.id
 freq_write = int(args.writefreq)
 njobs = int(args.njobs)
 slice_indices = args.slice
+randomchoice = args.randomchoice
 use_slice = not (slice_indices[0] == 0 and slice_indices[1] == 0)
+take_random = not (randomchoice == 0)
 
 # Checks the variables are str True or False before converting to bool
 check_bool(args.visualize,"--visualize ( -v)")
@@ -347,14 +349,23 @@ if (file_format=='xyz'):  # XYZ file case
     print("\n Coordinates from the xyz file will be read using the ASE library\n")
     print("\n Reading file...\n")
     trajectory = read(input_name, index=':')
-    if (use_slice):
-        print("\n Only a slice will be considered ( from ",slice_indices[0]," to ",slice_indices[1],")\n")
-        trajectory=trajectory[slice_indices[0]:slice_indices[1]]
-    nsteps = len(trajectory)
-    natoms = len(trajectory[0])
-    coordinates = np.empty((nsteps, natoms, 3))
+    coordinates = np.empty((len(trajectory), len(trajectory[0]), 3))
     for i, frame in enumerate(trajectory):
         coordinates[i] = frame.get_positions()
+    if (use_slice):
+        print("\n Only a slice will be considered ( from ",slice_indices[0]," to ",slice_indices[1],")\n")
+        coordinates=coordinates[slice_indices[0]:slice_indices[1]]
+    if (take_random):
+        print("\n A random choice of", randomchoice, "frames will be considered\n")
+        if (randomchoice > len(coordinates)):
+            sys.exit("Error: ", randomchoice ," must be lower than the number of frames to analize")
+        indices_array=np.arange(0,len(coordinates))
+        indices_randomchoice=np.random.choice(indices_array, randomchoice, replace=False)
+        coordinates = coordinates[indices_randomchoice]
+        print(" --> The random choice will be saved to random_choice_indices.dat")
+        np.savetxt("random_choice_indices.dat",indices_randomchoice,fmt='%i')
+    nsteps = len(trajectory)
+    natoms = len(trajectory[0])
 elif (file_format=='netcdf'): # NETCDF file case
     print("\n Coordinates from the netcdf file will be read using the ParmED library\n")
     print("\n Reading file...\n")
@@ -363,9 +374,17 @@ elif (file_format=='netcdf'): # NETCDF file case
     if (use_slice):
         print("\n Only a slice will be considered ( from ",slice_indices[0]," to ",slice_indices[1],")\n")
         coordinates=coordinates[slice_indices[0]:slice_indices[1]]
+    if (take_random):
+        print("\n A random choice of", randomchoice, "frames will be considered\n")
+        if (randomchoice > len(coordinates)):
+            sys.exit("Error: ", randomchoice ," must be lower than the number of frames to analize")
+        indices_array=np.arange(0,len(coordinates))
+        indices_randomchoice=np.random.choice(indices_array, randomchoice, replace=False)
+        coordinates = coordinates[indices_randomchoice]
+        print(" --> The random choice will be saved to random_choice_indices.dat")
+        np.savetxt("random_choice_indices.dat",indices_randomchoice,fmt='%i')
     nsteps = len(coordinates)
     natoms = len(coordinates[0])
-
 if ((file_format=='xyz') or (file_format=='netcdf')): #In this case a file with the dihe definition must be provided
     dihelist=np.loadtxt(dihelist_name,dtype='int')
     if (len(np.shape(dihelist))==1): #1D array recieved
@@ -396,6 +415,15 @@ else: # dihe case (a dihetraj file is provided)
     if (use_slice):
         print("\n Using frames ",slice_indices[0]," to ",slice_indices[1],"\n")
         dihetraj=dihetraj[slice_indices[0]:slice_indices[1]]
+    if (take_random):
+        print("\n A random choice of", randomchoice, "frames will be considered\n")
+        if (randomchoice > len(coordinates)):
+            sys.exit("Error: ", randomchoice ," must be lower than the number of frames to analize")
+        indices_array=np.arange(0,len(dihetraj))
+        indices_randomchoice=np.random.choice(indices_array, randomchoice, replace=False)
+        dihetraj = dihetraj[indices_randomchoice]
+        print(" --> The random choice will be saved to random_choice_indices.dat")
+        np.savetxt("random_choice_indices.dat",indices_randomchoice,fmt='%i')
     nsteps=len(dihetraj)
 
 #From now onwards, we will be working with the dihetraj array (nsteps,ndihe)
