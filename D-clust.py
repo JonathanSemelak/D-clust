@@ -348,7 +348,7 @@ if (file_format=='xyz'):  # XYZ file case
     print("\n Reading file...\n")
     trajectory = read(input_name, index=':')
     if (use_slice):
-        print("\n Only a slice will be considered (from ",slice_indices[0]," to ",slice_indices[1],")\n")
+        print("\n Only a slice will be considered ( from ",slice_indices[0]," to ",slice_indices[1],")\n")
         trajectory=trajectory[slice_indices[0]:slice_indices[1]]
     nsteps = len(trajectory)
     natoms = len(trajectory[0])
@@ -361,7 +361,7 @@ elif (file_format=='netcdf'): # NETCDF file case
     trajectory = NetCDFTraj.open_old(input_name)
     coordinates = np.array(trajectory.coordinates)
     if (use_slice):
-        print("\n Only a slice will be considered (from ",slice_indices[0]," to ",slice_indices[1],")\n")
+        print("\n Only a slice will be considered ( from ",slice_indices[0]," to ",slice_indices[1],")\n")
         coordinates=coordinates[slice_indices[0]:slice_indices[1]]
     nsteps = len(coordinates)
     natoms = len(coordinates[0])
