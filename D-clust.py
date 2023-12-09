@@ -409,6 +409,7 @@ dihetraj = dihetraj*np.pi/180.0 #Converts to radians
 # initialise a Data object
 d_dihedrals = Data(dihetraj, verbose=False,njobs=njobs)
 # compute distances by setting the correct period
+print("\n Computing distance matrix...\n")
 d_dihedrals.compute_distances(maxk=dihetraj.shape[0]-1, period=2.*np.pi)
 
 # estimate the intrinsic dimension
