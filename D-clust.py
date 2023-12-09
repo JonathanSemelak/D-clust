@@ -295,6 +295,7 @@ parser.add_argument('-z', '--zvalue',  default=3.5, help="Z value for ADP")
 parser.add_argument('-wt', '--writetrajs', default="False", help="Write a trajectory file for each cluster")
 parser.add_argument('-wf', '--writefreq', default=1, help="Writting frequence (for --writetrajs/-wt option)")
 parser.add_argument('-nj', '--njobs', default=1, help="Number of threads for ADP calculation")
+parser.add_argument('-s', '--slice', nargs=2, type=int, default=[0, 0], help='Analize a slice of the data (frame count starts with zero)')
 
 
 # If no arguments are provided, print the description and exit
@@ -313,6 +314,8 @@ z_value = args.zvalue
 ID = args.id
 freq_write = int(args.writefreq)
 njobs = int(args.njobs)
+slice_indices = args.slice
+use_slice = not (slice_indices[0] == 0 and slice_indices[1] == 0)
 
 # Checks the variables are str True or False before converting to bool
 check_bool(args.visualize,"--visualize ( -v)")
@@ -344,6 +347,9 @@ if (file_format=='xyz'):  # XYZ file case
     print("\n Coordinates from the xyz file will be read using the ASE library\n")
     print("\n Reading file...\n")
     trajectory = read(input_name, index=':')
+    if (use_slice):
+        print("\n Only a slice will be considered (from ",slice_indices[0]," to ",slice_indices[1],")\n")
+        trajectory=trajectory[slice_indices[0]:slice_indices[1]]
     nsteps = len(trajectory)
     natoms = len(trajectory[0])
     coordinates = np.empty((nsteps, natoms, 3))
@@ -354,6 +360,9 @@ elif (file_format=='netcdf'): # NETCDF file case
     print("\n Reading file...\n")
     trajectory = NetCDFTraj.open_old(input_name)
     coordinates = np.array(trajectory.coordinates)
+    if (use_slice):
+        print("\n Only a slice will be considered (from ",slice_indices[0]," to ",slice_indices[1],")\n")
+        coordinates=coordinates[slice_indices[0]:slice_indices[1]]
     nsteps = len(coordinates)
     natoms = len(coordinates[0])
 
@@ -375,7 +384,7 @@ if ((file_format=='xyz') or (file_format=='netcdf')): #In this case a file with 
     fmt = ['%d'] + ['%.4f'] * ndihe
     indices=np.arange(nsteps)
     np.savetxt('dihetraj.dat',np.column_stack((indices,dihetraj)),fmt=fmt)
-else: # dihe case (a dihetraj file is provided
+else: # dihe case (a dihetraj file is provided)
     # Open the file and read one line to determine the number of columns (dihe+1)
     print("\n Dihedrals time evolution will be read directly from input file\n")
     print("\n Reading file...\n")
@@ -384,6 +393,9 @@ else: # dihe case (a dihetraj file is provided
     ndihe = len(first_line.split())-1
     # Load the data, skipping the first column
     dihetraj=np.loadtxt(input_name,usecols=range(1, ndihe+1))
+    if (use_slice):
+        print("\n Using frames ",slice_indices[0]," to ",slice_indices[1],"\n")
+        dihetraj=dihetraj[slice_indices[0]:slice_indices[1]]
     nsteps=len(dihetraj)
 
 #From now onwards, we will be working with the dihetraj array (nsteps,ndihe)
