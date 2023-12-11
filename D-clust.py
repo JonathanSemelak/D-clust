@@ -567,6 +567,20 @@ for i in range(0,n_clusters):
     print(" --> Indices from cluster #"+str(int(i))+" saved in file "+ith_cluster_indices_filename)
 
 
+if (halo):
+    for i in range(0,n_clusters):
+        ith_cluster_indices_no_halos=cluster_indices_no_halos[i]
+        ith_cluster_indices_no_halos=np.array(ith_cluster_indices_no_halos)
+        ith_cluster_indices_filename_no_halos='cluster_'+str(int(i))+'_indices_no_halos.dat'
+        np.savetxt(ith_cluster_indices_filename_no_halos,ith_cluster_indices_no_halos,fmt='%i')
+        print(" --> Indices from cluster #"+str(int(i))+" (no halo points) saved in file "+ith_cluster_indices_filename_no_halos)
+    for i in range(0,n_clusters):
+        ith_cluster_indices_halos=cluster_indices_halos[i]
+        ith_cluster_indices_halos=np.array(ith_cluster_indices_halos)
+        ith_cluster_indices_filename_halos='cluster_'+str(int(i))+'_indices_halos.dat'
+        np.savetxt(ith_cluster_indices_filename_halos,ith_cluster_indices_halos,fmt='%i')
+        print(" --> Indices from cluster #"+str(int(i))+" (halo points) saved in file "+ith_cluster_indices_filename_halos)
+
 # Write trajs
 if (write_trajs and not file_format == 'dihe'):
     print("\n Generating trajectory files...\n")
