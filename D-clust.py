@@ -206,6 +206,7 @@ def get_dendrogram_custom(Data, cmap="viridis", savefig="", logscale=True, showp
     plt.ylabel(r"ln($\rho$)")
     if savefig != "":
         plt.savefig(savefig)
+        plt.clf()
     if (showplot):
         plt.show()
 
@@ -225,6 +226,7 @@ def plot_ID_scaling(scales_2nn,ids_2nn,errs_2nn,scales_gride,ids_gride, errs_gri
     plt.tight_layout()
     if savefig != "":
         plt.savefig(savefig)
+        plt.clf()
     if (showplot):
         plt.show()
 
