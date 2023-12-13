@@ -490,6 +490,8 @@ d_dihedrals.set_id(ID)
 d_dihedrals.compute_clustering_ADP(Z=float(z_value),halo=halo);
 n_clusters = len(d_dihedrals.cluster_centers)
 
+print("\n Number of clusters found: ",int(n_clusters)," \n")
+
 print("\n Performing Advanced Density Peaks (ADP) analysis:\n")
 
 if (halo):
@@ -582,6 +584,16 @@ if (halo):
         ith_cluster_indices_filename_halos='cluster_'+str(int(i))+'_indices_halos.dat'
         np.savetxt(ith_cluster_indices_filename_halos,ith_cluster_indices_halos,fmt='%i')
         print(" --> Indices from cluster #"+str(int(i))+" (halo points) saved in file "+ith_cluster_indices_filename_halos)
+
+# Saves list of indices for each cluster
+print("\n Saving clusters assignment...\n")
+cluster_assignment_file=np.empty(nsteps)
+for i in range(0,nsteps):
+     for j in range(0,n_clusters):
+          if (i in cluster_indices[j]):
+              cluster_assignment_file[i]=j
+np.savetxt("cluster_assignment.dat",cluster_assignment_file,fmt='%i')
+print(" --> Cluster assignment saved in file cluster_assignment.dat")
 
 # Write trajs
 if (write_trajs and not file_format == 'dihe'):
