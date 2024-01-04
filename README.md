@@ -33,7 +33,7 @@ python D-clust.py [-h] -i INPUT -f FORMAT [-d DIHELIST] [other optional argument
 - `-i`, `--input`: Input file name (required).
 - `-d`, `--dihelist`: A text file with the atom index of each dihedral to be extracted (required unless the format is 'dihe').
 - `-f`, `--format`: Input file format ('xyz', 'netcdf' or 'dihe', required). 
-- `-id`, `--id`: Intrinsic dimension (required).
+- `-id`, `--id`: Intrinsic dimension (integer, if not provided, it will be estimated).
 - `-v`, `--visualize`: Plot on screen the intrinsic dimension scaling ('True' or 'False', if 'False', it only saves it as a .svg file, default: 'False').
 - `-ha`,`--halo`: Use halo for ADP ('True' or 'False', default: 'False').
 - `-z`, `--zvalue`: Z value for ADP (Float, default: 3.5).
