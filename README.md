@@ -44,6 +44,41 @@ python D-clust.py [-h] -i INPUT -f FORMAT [-d DIHELIST] [other optional argument
 - `-rc`, `--randomchoice`: Make a random choice of --randomchoice/-rc frames (integer, not used by default).
 - `-h`, `--help`: Show help message and exit.
 
+### Comments about "dihelist" and the "dihe" format
+
+The `dihelist` file can be provided in two formats: A single-column file, containing the number of the atoms forming a "chain" of dihedral angles, or a four-columng file, in which the mask of each dihedral is specified. In every case, the atom count starts with 0.
+
+Single-column example:
+```console
+5
+7
+8
+9
+4
+```
+
+Four-column example:
+```console
+5 7 8 9
+7 8 9 4
+```
+In both cases, the dihedral angles that will be considered are: 5-7-8-9 and 7-8-9-4.
+
+If the `format` is 'dihe', a file with NDIHE+1 columns should be provided, containing tha time evolution of NDIHE dihedral angles (columns 2 to NDIHE+1) and a column containing the frame number.
+
+Example:
+
+```console
+1 dihe_1_value_in_frame_1 dihe_1_value_in_frame_1 dihe_3_value_in_frame_1 ...
+2 dihe_1_value_in_frame_2 dihe_1_value_in_frame_2 dihe_3_value_in_frame_2 ...
+3 dihe_1_value_in_frame_3 dihe_1_value_in_frame_3 dihe_3_value_in_frame_3 ...
+.
+.
+.
+```
+This option is usefull for saving-time purposes only. Also, a file in this format will be generated as output (with the name 'dihetraj.dat') if `format` is 'netcdf' of `xyz`.
+
+
 ## Acknowledgement
 Please cite the corresponding DADApy and ADP papers in case you use this tool.
 
