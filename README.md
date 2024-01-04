@@ -12,10 +12,10 @@ time courses if you prefer so.
 
 It is recommended to check the DadaPy and ADP papers:
 
-Glielmo, A., Macocco, I., ... & Laio, A. (2022). DADApy: Distance-based
+- Glielmo, A., Macocco, I., ... & Laio, A. (2022). DADApy: Distance-based
 analysis of data-manifolds in Python. Patterns, 3(10).
 
-Rodriguez, A., & Laio, A. (2014). Clustering by fast search and find of
+- Rodriguez, A., & Laio, A. (2014). Clustering by fast search and find of
 density peaks. Science, 344(6191), 1492-1496.
 
 Also, make sure to check the DADApy library repo:
@@ -36,7 +36,7 @@ python D-clust.py [-h] -i INPUT -f FORMAT [-d DIHELIST] [other optional argument
 - `-id`, `--id`: Intrinsic dimension (integer, if not provided, it will be estimated).
 - `-v`, `--visualize`: Plot on screen the intrinsic dimension scaling ('True' or 'False', if 'False', it only saves it as a .svg file, default: 'False').
 - `-ha`,`--halo`: Use halo for ADP ('True' or 'False', default: 'False').
-- `-z`, `--zvalue`: Z value for ADP (Float, default: 3.5).
+- `-z`, `--zvalue`: Z value for ADP (float, default: 3.5).
 - `wt`, `--writetrajs`: Write a trajectory file for each cluster ('True' or 'False', default: 'False').
 - `-wf`,`--writefreq`: Writting frequence (for --writetrajs/-wt option, intgeter, default: 1).
 - `-nj`,`--njobs`: Number of threads for ADP calculation (integer, default: 1).
