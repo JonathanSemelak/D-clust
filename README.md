@@ -22,8 +22,9 @@ Also, make sure to check the DADApy library repo:
 
 https://github.com/sissa-data-science/DADApy
 
-## Requirement
-
+## Requirements
+- Python 3
+- Libraries: DADApy, NumPy, ParmED (for netcdf), ASE (for xyz files), matplotlib.
 
 ## Usage
 Run the script from the command line with the required arguments.
