@@ -1,12 +1,12 @@
 # D-clust (using DADApy)
 
 ## Welcome to the D-clust Python Script!  
-This code is pretty much an automatization tool that follows the DADApy 
-official tutorial, but it makes it easier for AMBER users because AMBER 
+This code is pretty much an automatization tool that follows the DADApy
+official tutorial, but it makes it easier for AMBER users because AMBER
 netcdf files can be provided as input directly.
 
 It can extract temporal courses of dihedral angles from your
-trajectory file and to analize them with the DADApy library using the 
+trajectory file and to analize them with the DADApy library using the
 Advanced Density Peaks (ADP) algorithm. It also recieves a file with suche
 time courses if you prefer so.
 
@@ -22,6 +22,9 @@ Also, make sure to check the DADApy library repo:
 
 https://github.com/sissa-data-science/DADApy
 
+## Requirement
+
+
 ## Usage
 Run the script from the command line with the required arguments.
 
@@ -32,7 +35,7 @@ python D-clust.py [-h] -i INPUT -f FORMAT [-d DIHELIST] [other optional argument
 ### Command-Line Arguments
 - `-i`, `--input`: Input file name (required).
 - `-d`, `--dihelist`: A text file with the atom index of each dihedral to be extracted (required unless the format is 'dihe').
-- `-f`, `--format`: Input file format ('xyz', 'netcdf' or 'dihe', required). 
+- `-f`, `--format`: Input file format ('xyz', 'netcdf' or 'dihe', required).
 - `-id`, `--id`: Intrinsic dimension (integer, if not provided, it will be estimated).
 - `-v`, `--visualize`: Plot on screen the intrinsic dimension scaling ('True' or 'False', if 'False', it only saves it as a .svg file, default: 'False').
 - `-ha`,`--halo`: Use halo for ADP ('True' or 'False', default: 'False').
@@ -84,8 +87,15 @@ Example:
 ```
 This option is usefull for saving-time purposes only. Also, a file in this format will be generated as output (with the name 'dihetraj.dat') if `format` is 'netcdf' of `xyz`.
 
+### Tools
+
+A script for extracting the frames of a netcdf file from a list is also provided (see the tools folder). It can be easily used by typing:
+
+```
+get_frames_from_list.py [-h] -i INPUT -l LIST -o OUTPUT
+```
+
+Where INPUT is a netcdf file, LIST is a list with indexes (that could correspond to the output of the D-clust.py script), and OUTPUT is the name you choose for the netcdf file containing the indexes of INPUT listed in LIST.
 
 ## Acknowledgement
 Please cite the corresponding DADApy and ADP papers in case you use this tool.
-
-
