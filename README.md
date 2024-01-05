@@ -6,9 +6,9 @@ official tutorial, but it makes it easier for AMBER users because AMBER
 netcdf files can be provided as input directly.
 
 It can extract temporal courses of dihedral angles from your
-trajectory file and to analize them with the DADApy library using the
-Advanced Density Peaks (ADP) algorithm. It also recieves a file with suche
-time courses if you prefer so.
+trajectory file and analize them with the DADApy library using the
+Advanced Density Peaks (ADP) algorithm. It recieves a file with such
+time courses instead if you prefer so.
 
 It is recommended to check the DadaPy and ADP papers:
 
@@ -41,12 +41,20 @@ python D-clust.py [-h] -i INPUT -f FORMAT [-d DIHELIST] [other optional argument
 - `-v`, `--visualize`: Plot on screen the intrinsic dimension scaling ('True' or 'False', if 'False', it only saves it as a .svg file, default: 'False').
 - `-ha`,`--halo`: Use halo for ADP ('True' or 'False', default: 'False').
 - `-z`, `--zvalue`: Z value for ADP (float, default: 3.5).
-- `wt`, `--writetrajs`: Write a trajectory file for each cluster ('True' or 'False', default: 'False').
+- `-wt`, `--writetrajs`: Write a trajectory file for each cluster ('True' or 'False', default: 'False').
 - `-wf`,`--writefreq`: Writting frequence (for --writetrajs/-wt option, intgeter, default: 1).
 - `-nj`,`--njobs`: Number of threads for ADP calculation (integer, default: 1).
 - `-s` ,`--slice`: Analize a slice of the data (two integers, not used by default, frame count starts with zero).
 - `-rc`, `--randomchoice`: Make a random choice of --randomchoice/-rc frames (integer, not used by default).
 - `-h`, `--help`: Show help message and exit.
+
+### Example
+
+The following example performs the analysis for a trajectory file, using only the first 10000 frames, and writes the frames belonging to each cluster as new trajectory files (only 1 out of 10 frames):
+
+```console
+python D-clust.py -i trajectory.nc -f netcdf -wt True -wf 10 -s 0 10000
+```
 
 ### Output
 
