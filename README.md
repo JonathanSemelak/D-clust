@@ -48,20 +48,6 @@ python D-clust.py [-h] -i INPUT -f FORMAT [-d DIHELIST] [other optional argument
 - `-rc`, `--randomchoice`: Make a random choice of --randomchoice/-rc frames (integer, not used by default).
 - `-h`, `--help`: Show help message and exit.
 
-### Example
-
-The following example performs the analysis for a trajectory file, using only the first 10000 frames, and writes the frames belonging to each cluster as new trajectory files (only 1 out of 10 frames):
-
-```console
-python D-clust.py -i trajectory.nc -f netcdf -wt True -wf 10 -s 0 10000
-```
-
-### Output
-
-The output files depend on the input files. For example, all the options that involve writing coordinates are only intented for the 'netcdf' `format`. Otherwise, the will be ignored.
-
-Several messages will be printed on screen during the execution. These include a summary of the clustering processings, as well as info regarding the content of each generated file. Briefly, the files generated will be text files containing the indexes of the frames belonging to each cluster and, if `format` is 'netcdf', trajectory files with the centers of each (and of each frame, if `writetrajs` is 'True').
-
 ### Comments about "dihelist" and the "dihe" format
 
 The `dihelist` file can be provided in two formats: A single-column file, containing the number of the atoms forming a "chain" of dihedral angles, or a four-columng file, in which the mask of each dihedral is specified. In every case, the atom count starts with 0.
@@ -95,6 +81,20 @@ Example:
 .
 ```
 This option is usefull for saving-time purposes only. Also, a file in this format will be generated as output (with the name 'dihetraj.dat') if `format` is 'netcdf' of `xyz`.
+
+### Example
+
+The following example performs the analysis for a trajectory file, using only the first 10000 frames, and writes the frames belonging to each cluster as new trajectory files (only 1 out of 10 frames):
+
+```console
+python D-clust.py -i trajectory.nc -f netcdf -d dihelist.txt -wt True -wf 10 -s 0 10000
+```
+
+### Output
+
+The output files depend on the input files. For example, all the options that involve writing coordinates are only intented for the 'netcdf' `format`. Otherwise, the will be ignored.
+
+Several messages will be printed on screen during the execution. These include a summary of the clustering processings, as well as info regarding the content of each generated file. Briefly, the files generated will be text files containing the indexes of the frames belonging to each cluster and, if `format` is 'netcdf', trajectory files with the centers of each (and of each frame, if `writetrajs` is 'True').
 
 ### Tools
 
